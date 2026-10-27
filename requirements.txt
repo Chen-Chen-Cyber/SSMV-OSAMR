@@ -1,0 +1,12 @@
+# Direct dependencies observed in the available Python 3.9 environment.
+# Install torch and torchvision using requirements-torch-cu116.txt first.
+numpy==1.26.4
+scipy==1.13.0
+scikit-learn==1.4.2
+matplotlib==3.5.1
+seaborn==0.13.2
+tqdm==4.66.4
+einops==0.8.1
+h5py==3.11.0
+PyWavelets==1.6.0
+openpyxl==3.1.5

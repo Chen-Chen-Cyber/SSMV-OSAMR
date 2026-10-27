@@ -1,0 +1,21 @@
+{
+  "task": "linear",
+  "data_root": "../data_workspace",
+  "device": "cuda:0",
+  "seed": 2026,
+  "num_known_classes": 11,
+  "epochs": 50,
+  "batch_size": 64,
+  "pretrained_checkpoint": "outputs/pretraining/best_pretrained.pt",
+  "train": {
+    "raw": "linear/train_raw.npy",
+    "sequence": "linear/train_sequence.npy",
+    "labels": "linear/train_labels.npy"
+  },
+  "validation": {
+    "raw": "linear/validation_raw.npy",
+    "sequence": "linear/validation_sequence.npy",
+    "labels": "linear/validation_labels.npy"
+  },
+  "output_dir": "outputs/linear"
+}

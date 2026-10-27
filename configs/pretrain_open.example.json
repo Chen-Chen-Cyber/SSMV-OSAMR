@@ -1,0 +1,16 @@
+{
+  "task": "pretrain",
+  "module": "open",
+  "data_root": "../data_workspace",
+  "device": "cuda:0",
+  "seed": 2026,
+  "epochs": 100,
+  "batch_size": 64,
+  "learning_rate": 0.01,
+  "weight_decay": 0.001,
+  "train": {
+    "raw": "pretraining/raw.npy",
+    "sequence": "pretraining/sequence.npy"
+  },
+  "output_dir": "outputs/pretraining_open"
+}

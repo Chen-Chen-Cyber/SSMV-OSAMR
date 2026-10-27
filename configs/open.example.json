@@ -1,0 +1,24 @@
+{
+  "task": "open",
+  "data_root": "../data_workspace",
+  "device": "cuda:0",
+  "seed": 2026,
+  "num_known_classes": 9,
+  "epochs": 100,
+  "batch_size": 16,
+  "pretrained_checkpoint": "outputs/pretraining_open/best_pretrained.pt",
+  "train": {
+    "raw": "open/train_raw.npy",
+    "sequence": "open/train_sequence.npy",
+    "labels": "open/train_labels.npy"
+  },
+  "validation": {
+    "raw": "open/validation_raw.npy",
+    "sequence": "open/validation_sequence.npy",
+    "labels": "open/validation_labels.npy"
+  },
+  "validation_snr_root": "open_set_data/validation/by_snr",
+  "test_snr_root": "open_set_data/test/by_snr",
+  "snrs": [-4, 0, 4],
+  "output_dir": "outputs/open"
+}
