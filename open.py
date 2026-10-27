@@ -747,7 +747,7 @@ def energy_score(logits, temperature=1.0):
 
 @torch.no_grad()
 def collect_dual_view_energy_outputs(model, val_dl, val_dl_mask, device, classifier, unknown_label=9, temperature=1.0, beta=0.1, gamma=0.1, LSTM=None):
-    """Collect dual-view energy outputs. The model expects model(data_mask, data), where data_mask has ten channels and data has two. Passing model(data, data) causes a channel mismatch."""
+    """Predict from mean logits and score with mean energy, energy gap and symmetric KL. The model expects model(data_mask, data), with ten and two channels, respectively."""
     model.eval()
     classifier.eval()
     if LSTM is not None:
@@ -767,7 +767,6 @@ def collect_dual_view_energy_outputs(model, val_dl, val_dl_mask, device, classif
             if LSTM is not None:
                 h_view1 = LSTM(h_view1)
             logits_view1 = classifier(h_view1)
-            pred_known = logits_view1.argmax(dim=1)
             energy_view1 = -temperature * torch.logsumexp(logits_view1 / temperature, dim=1)
             noise_std = 0.01
             data_mask_aug = data_mask + noise_std * torch.randn_like(data_mask)
@@ -775,7 +774,10 @@ def collect_dual_view_energy_outputs(model, val_dl, val_dl_mask, device, classif
             if LSTM is not None:
                 h_view2 = LSTM(h_view2)
             logits_view2 = classifier(h_view2)
+            mean_logits = 0.5 * (logits_view1 + logits_view2)
+            pred_known = mean_logits.argmax(dim=1)
             energy_view2 = -temperature * torch.logsumexp(logits_view2 / temperature, dim=1)
+            mean_energy = 0.5 * (energy_view1 + energy_view2)
             energy_gap = torch.abs(energy_view1 - energy_view2)
             p1 = torch.softmax(logits_view1, dim=1)
             p2 = torch.softmax(logits_view2, dim=1)
@@ -784,7 +786,7 @@ def collect_dual_view_energy_outputs(model, val_dl, val_dl_mask, device, classif
             kl_1_2 = F.kl_div(log_p1, p2, reduction='none').sum(dim=1)
             kl_2_1 = F.kl_div(log_p2, p1, reduction='none').sum(dim=1)
             kl_consistency = 0.5 * (kl_1_2 + kl_2_1)
-            open_score = energy_view1 + beta * energy_gap + gamma * kl_consistency
+            open_score = mean_energy + beta * energy_gap + gamma * kl_consistency
             all_labels.append(labels.detach().cpu())
             all_pred_known.append(pred_known.detach().cpu())
             all_score.append(open_score.detach().cpu())

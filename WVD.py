@@ -642,8 +642,8 @@ def sequence_transform(data):
     amplitude = np.abs(complex_data)
     phase = np.angle(complex_data)
 
-    sin_feature = amplitude * np.sin(phase)
-    cos_feature = amplitude * np.cos(phase)
+    power2_spectrum = np.abs(np.fft.fft(complex_data ** 2, axis=-1))
+    power4_spectrum = np.abs(np.fft.fft(complex_data ** 4, axis=-1))
 
     fft_data = np.fft.fft(complex_data, axis=-1)
 
@@ -658,8 +658,8 @@ def sequence_transform(data):
             q_data,
             amplitude,
             phase,
-            sin_feature,
-            cos_feature,
+            power2_spectrum,
+            power4_spectrum,
             fft_real,
             fft_imag,
             fft_magnitude,

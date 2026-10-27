@@ -9,7 +9,7 @@ from random import *
 def Data_Transformer(inputs, random_seed, num=None):
     """Transform [batch, 2, length] IQ signals without changing their length.
 
-    Modes: 1 amplitude/phase; 2 amplitude*sin(phase)/amplitude*cos(phase);
+    Modes: 1 amplitude/phase; 2 magnitude spectra of IQ squared/fourth power;
     3 FFT real/imaginary; 4 log1p(FFT magnitude)/FFT phase.
     random_seed is the historical mode identifier, not an RNG seed.
     num is retained as an unused compatibility argument.
@@ -35,14 +35,9 @@ def Data_Transformer(inputs, random_seed, num=None):
         AP = torch.cat((A, P), dim=1)
         return AP
     if random_seed == 2:
-        A = torch.abs(iq)
-        P = torch.angle(iq)
-        sin = A * torch.sin(P)
-        sin = torch.reshape(sin, (iq.shape[0], 1, inputs.shape[-1]))
-        cos = A * torch.cos(P)
-        cos = torch.reshape(cos, (iq.shape[0], 1, inputs.shape[-1]))
-        sc = torch.cat((sin, cos), dim=1)
-        return sc
+        power2_spectrum = torch.abs(torch.fft.fft(iq ** 2, dim=-1))
+        power4_spectrum = torch.abs(torch.fft.fft(iq ** 4, dim=-1))
+        return torch.stack((power2_spectrum, power4_spectrum), dim=1)
     if random_seed == 3:
         fiq = torch.fft.fft(iq)
         fi = fiq.real

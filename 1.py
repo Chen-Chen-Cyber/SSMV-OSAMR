@@ -863,14 +863,14 @@ def sequence_transform(data):
     complex_data = i_data + 1j * q_data
     amplitude = np.abs(complex_data)
     phase = np.angle(complex_data)
-    sin_feature = amplitude * np.sin(phase)
-    cos_feature = amplitude * np.cos(phase)
+    power2_spectrum = np.abs(np.fft.fft(complex_data ** 2, axis=-1))
+    power4_spectrum = np.abs(np.fft.fft(complex_data ** 4, axis=-1))
     fft_data = np.fft.fft(complex_data, axis=-1)
     fft_real = fft_data.real
     fft_imag = fft_data.imag
     fft_magnitude = np.log1p(np.abs(fft_data))
     fft_phase = np.angle(fft_data)
-    features = np.stack([i_data, q_data, amplitude, phase, sin_feature, cos_feature, fft_real, fft_imag, fft_magnitude, fft_phase], axis=1)
+    features = np.stack([i_data, q_data, amplitude, phase, power2_spectrum, power4_spectrum, fft_real, fft_imag, fft_magnitude, fft_phase], axis=1)
     return features.astype(np.float32)
 if __name__ == '__main__':
     loss_model = CenterLoss(11, 128).to(device)
